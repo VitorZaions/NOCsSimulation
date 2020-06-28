@@ -1,1 +1,1 @@
-Pequena simulação com NOCs fazend o uso de threads
+Pequena simulaÃ§Ã£o com NOCs fazendo o uso de threads
