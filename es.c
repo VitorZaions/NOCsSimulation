@@ -60,7 +60,7 @@ void *Thread(void *dados)
         }
 
 
-        else if(ladoir == 'l')
+        else
         {
 
             if(myid == target && myid != lastthread)
@@ -221,7 +221,7 @@ int comparenum(int src, int trgt, int nodoschave)
 }
 
 
-// Função main do programa
+// FunÃ§Ã£o main do programa
 int main(int argc, char *argv[])
 {
 
