@@ -6,6 +6,12 @@ int status = 0;
 int lastthread;
 int arrived = 0;
 
+int mensagensdestino[201];
+int mensagenstrafegadas[201];
+int mensagenscriadas[201];
+
+int first = 0;
+
 struct args
 {
     int source;
@@ -18,6 +24,7 @@ struct args
 
 void *Thread(void *dados)
 {
+
     if(arrived == 0)
     {
         int source = ((struct args*)dados)->source;
@@ -28,10 +35,17 @@ void *Thread(void *dados)
         char ladoir = ((struct args*)dados)->ladogo;
         int myid = status;
 
+        if(first == 0)
+        {
+            mensagenscriadas[source]++;
+            first = 1;
+        }
+
         if(ladoir == 'r')
         {
             if(myid == target && myid != lastthread)
             {
+                mensagensdestino[myid]++;
                 printf("[Nodo %d]",myid);
                 printf("Mensagem recebida '%s' do nodo %d source = %d target = %d \n",msg,lastthread,source,target);
                 arrived = 1;
@@ -53,7 +67,7 @@ void *Thread(void *dados)
                 {
                     status++;
                 }
-
+                mensagenstrafegadas[myid]++;
                 printf("[Nodo %d]",myid);
                 printf("enviando mensagem '%s' para o nodo %d \n",msg,status);
             }
@@ -65,6 +79,7 @@ void *Thread(void *dados)
 
             if(myid == target && myid != lastthread)
             {
+                mensagensdestino[myid]++;
                 printf("[Nodo %d]",myid);
                 printf("Mensagem recebida '%s' do nodo %d source = %d target = %d \n",msg,lastthread,source,target);
                 arrived = 1;
@@ -86,7 +101,7 @@ void *Thread(void *dados)
                 {
                     status--;
                 }
-
+                mensagenstrafegadas[myid]++;
                 printf("[Nodo %d]",myid);
                 printf("enviando mensagem '%s' para o nodo %d \n",msg,status);
             }
@@ -107,16 +122,18 @@ char compare(int src, int trgt, int nodoschave)
 
         for (int i = 1; i < 2; src--)
         {
+            if(src == 1)
+            {
+                src = nodoschave + 1;
+            }
+
             if(src == trgt)
             {
+                casasesquerda++;
                 break;
             }
             else
             {
-                if(src == 1)
-                {
-                    src = nodoschave + 1;
-                }
                 casasesquerda++;
             }
         }
@@ -135,6 +152,11 @@ char compare(int src, int trgt, int nodoschave)
         for (int i = 1; i < 2; src++)
         {
 
+            if(src == nodoschave)
+            {
+                src = 1;
+            }
+
             if(src == trgt)
             {
                 casasdireita++;
@@ -142,10 +164,6 @@ char compare(int src, int trgt, int nodoschave)
             }
             else
             {
-                if(src == nodoschave)
-                {
-                    src = 1;
-                }
                 casasdireita++;
             }
         }
@@ -166,6 +184,12 @@ int comparenum(int src, int trgt, int nodoschave)
 
         for (int i = 1; i < 2; src--)
         {
+
+            if(src == 1)
+            {
+                src = nodoschave + 1;
+            }
+
             if(src == trgt)
             {
                 casasesquerda++;
@@ -173,11 +197,6 @@ int comparenum(int src, int trgt, int nodoschave)
             }
             else
             {
-                if(src == 1)
-                {
-                    src = nodoschave + 1;
-                }
-
                 casasesquerda++;
             }
         }
@@ -197,6 +216,11 @@ int comparenum(int src, int trgt, int nodoschave)
         for (int i = 1; i < 2; src++)
         {
 
+            if(src == nodoschave)
+            {
+                src = 1;
+            }
+
             if(src == trgt)
             {
                 casasdireita++;
@@ -204,10 +228,6 @@ int comparenum(int src, int trgt, int nodoschave)
             }
             else
             {
-                if(src == nodoschave)
-                {
-                    src = 1;
-                }
                 casasdireita++;
             }
         }
@@ -231,10 +251,17 @@ int main(int argc, char *argv[])
     int qntentradas;
     scanf("%d",&qntentradas);
 
+    for(int i = 0; i < 201; i++)
+    {
+        mensagenscriadas[i] = 0;
+        mensagensdestino[i] = 0;
+        mensagenstrafegadas[i] = 0;
+    }
+
     for(int i = 0; i < qntentradas ; i++)
     {
+        first = 0;
         struct args *Valores = (struct args *)malloc(sizeof(struct args));
-
         arrived = 0;
 
         int nodoschaveamento;
@@ -272,5 +299,29 @@ int main(int argc, char *argv[])
         }
 
     }
+
+    printf("\n");
+
+    for(int i = 0; i < 201; i++)
+    {
+
+        if(mensagenscriadas[i] != 0)
+        {
+            printf("[N%d] Mensagens Criadas: %d \n",i,mensagenscriadas[i]);
+        }
+
+        if (mensagensdestino[i] != 0)
+        {
+            printf("[N%d] Mensagens Destino: %d\n",i,mensagensdestino[i]);
+        }
+
+        if(mensagenstrafegadas[i] != 0)
+        {
+            printf("[N%d] Mensagens Trafegadas: %d \n",i,mensagenstrafegadas[i]);
+        }
+
+    }
+
+
     pthread_exit(NULL);
 }
